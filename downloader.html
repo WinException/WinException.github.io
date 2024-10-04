@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Download videos easily from Cliplii using ClipDownloader">
+  <meta name="keywords" content="ClipDownloader, video download, Cliplii, video sharing">
+  <title id="title"></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/i18next@21.6.14/dist/umd/i18next.min.js"></script>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col items-center justify-center p-6">
+  <header class="w-full max-w-3xl mx-auto text-center mb-12">
+    <h1 id="siteTitle" class="text-5xl font-bold text-blue-600 mb-4"></h1>
+    <p id="siteDescription" class="text-lg text-gray-600"></p>
+  </header>
+
+  <div class="w-full max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md">
+    <input 
+      type="text" 
+      id="videoUrl" 
+      placeholder="https://www.cliplii.top/watch.php?id=38" 
+      class="w-full p-3 pl-10 text-sm text-gray-700 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+    />
+    <button 
+      onclick="fetchVideoData()" 
+      id="getVideoInfoButton" 
+      class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors"
+    >
+    </button>
+  </div>
+  <div id="videoDetails" class="video-details mt-12 w-full max-w-lg mx-auto p-4 bg-white rounded-lg shadow-md"></div>
+
+  <script>
+    i18next.init({
+      lng: 'en', 
+      resources: {
+        en: {
+          translation: {
+            siteTitle: 'ClipDownloader',
+            siteDescription: 'Download videos easily from Cliplii',
+            title: 'ClipDownloader - Download Videos from Cliplii',
+            description: 'Enter the Cliplii video URL to download:',
+            getVideoInfoButton: 'Get Video Info',
+            downloadButton: 'Download Video',
+            videoDetails: {
+              title: 'Video Title',
+              description: 'Video Description',
+              thumbnail: 'Video Thumbnail',
+            }
+          }
+        },
+        ru: {
+          translation: {
+            siteTitle: 'КлипДаунлоадер',
+            siteDescription: 'Загрузите видео из Cliplii',
+            title: 'КлипДаунлоадер - Загрузите видео из Cliplii',
+            description: 'Введите URL видео Cliplii для загрузки:',
+            getVideoInfoButton: 'Получить информацию о видео',
+            downloadButton: 'Скачать видео',
+            videoDetails: {
+              title: 'Название видео',
+              description: 'Описание видео',
+              thumbnail: 'Миниатюра видео',
+            }
+          }
+        },
+        uk: {
+          translation: {
+            siteTitle: 'КліпДаунлоадер',
+            siteDescription: 'Завантажте відео з Cliplii',
+            title: 'КліпДаунлоадер - Завантажте відео з Cliplii',
+            description: 'Введіть URL відео Cliplii для завантаження:',
+            getVideoInfoButton: 'Отримати інформацію про відео',
+            downloadButton: 'Завантажити відео',
+            videoDetails: {
+              title: 'Назва відео',
+              description: 'Опис відео',
+              thumbnail: 'Мініатюра відео',
+            }
+          }
+        },
+        pl: {
+          translation: {
+            siteTitle: 'ClipDownloader',
+            siteDescription: 'Pobierz filmy z Cliplii',
+            title: 'ClipDownloader - Pobierz filmy z Cliplii',
+            description: 'Wprowadź adres URL wideo Cliplii do pobrania:',
+            getVideoInfoButton: 'Pobierz informacje o wideo',
+            downloadButton: 'Pobierz wideo',
+            videoDetails: {
+              title: 'Tytuł wideo',
+ description: 'Opis wideo',
+              thumbnail: 'Miniatura wideo',
+            }
+          }
+        },
+      }
+    });
+
+    const userLang = navigator.language || navigator.userLanguage;
+    i18next.changeLanguage(userLang.substring(0, 2));
+
+    document.getElementById('title').innerHTML = i18next.t('title');
+    document.getElementById('siteTitle').innerHTML = i18next.t('siteTitle');
+    document.getElementById('siteDescription').innerHTML = i18next.t('siteDescription');
+    document.getElementById('getVideoInfoButton').innerHTML = i18next.t('getVideoInfoButton');
+
+    function fetchVideoData() {
+      const urlInput = document.getElementById('videoUrl').value;
+      const videoId = urlInput.split('id=')[1];
+      const apiUrl = `https://www.cliplii.top/api/video.php?id=${videoId}`;
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+          const videoDetailsDiv = document.getElementById('videoDetails');
+          videoDetailsDiv.innerHTML = `
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">${data.title}</h2>
+            <p class="text-gray-600 mb-4">${data.description}</p>
+            <img src="${data.thumbnail_path}" alt="${data.title}" class="w-full h-64 object-cover mb-4">
+            <button onclick="downloadVideo('${data.video_path}', '${data.title}.mp4')" id="downloadButton" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition-colors">${i18next.t('downloadButton')}</button>
+          `;
+        })
+        .catch(error => console.error('Error:', error));
+    }
+
+    function downloadVideo(url, filename) {
+        const a = document.createElement('a');
+        a.href = url;
+        a.setAttribute('download', filename);
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+  </script>
+</body>
+</html>
